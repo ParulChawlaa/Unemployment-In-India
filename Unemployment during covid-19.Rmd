@@ -1,0 +1,184 @@
+# UNEMPLOYMENT IN INDIA
+
+1.  Uploading the data
+
+```{r}
+Unemployment1<-read.csv("C:/Users/parul/Desktop/Congno Rise Internship/Unemployment in India.csv")
+```
+
+```{r}
+Unemployment1
+```
+
+2.  Changing the column names for simplicity
+
+```{r}
+colnames(Unemployment1)<-c("Region","Date","Frequency","Estimated_Unemp_Rate","Estimated_Emp_Rate","Estimated_Labour_Rate","Areas")
+```
+
+```{r}
+names(Unemployment1)
+```
+
+3.  Installing the required packages
+
+```{r}
+library("ggplot2")
+```
+
+```{r}
+library("plotly")
+```
+
+```{r}
+library("corrplot")
+```
+
+4.  Getting the summary for Estimated Unemployment Rate
+
+```{r}
+summary(Unemployment1$Estimated_Unemp_Rate)
+```
+
+5.  Summary for Estimated Employment Rate
+
+```{r}
+summary(Unemployment1$Estimated_Emp_Rate)
+```
+
+6.  Summary for Estimated Labor Participation
+
+```{r}
+summary(Unemployment1$Estimated_Labour_Rate)
+```
+
+7.  Regression of Unemployment Rate on Employed
+
+```{r}
+ggplot(Unemployment1,aes(x=Estimated_Emp_Rate,y=Estimated_Unemp_Rate))+
+  geom_point(aes(color=Region),alpha=0.6)+
+  geom_smooth(method="lm",formula = y~x,se=FALSE,color="blue")+
+  labs(title="Regression of Unemployment Rate on Employed",x="Employed",y="Unemployment Rate")
+```
+
+THIS SHOWS THAT AS THE NEGATIVE RELATIONSHIP BETWEEN UNEMPLOYMENT & EMPLOYMENT RATES
+
+8.  Bar plot for the Mean Estimated Unemployment Rate by Region
+
+```{r}
+UE_grouped1<-aggregate(Estimated_Unemp_Rate~Region,data = Unemployment1,FUN = mean)
+```
+
+```{r}
+ggplot(UE_grouped1,aes(x=Region,y=Estimated_Unemp_Rate))+
+  geom_bar(stat = "identity",fill="skyblue")+
+  theme(axis.text.x = element_text(angle = 90,vjust = 0.5,hjust = 1))+
+  labs(title = "Mean Estimated Unemployment Rate by Region",
+       x = "Region", y = "Mean Estimated Unemployment Rate")
+```
+
+MEAN ESTIMATED UNEMPLOYMENT RATE IN UTTAR PRADESH IS HIGH FOLLOWED BY HARYANA
+
+9.  Box Plot for showing the effect of regions on Unemployment Rates
+
+```{r}
+ggplot(Unemployment1)+
+  geom_boxplot(mapping = aes(x=Region,y=Estimated_Unemp_Rate,fill=Region),color="darkgrey")+
+  theme(axis.text.x = element_text(angle = 90,vjust = 0.5,hjust = 1))+
+  labs(title = "Effect of Regions on Unemployment Rate",x="Region",y="Unemployment Rate")
+```
+
+10. Correlation between Estimated Unemployment rate, estimated employment rate and labor participation.
+
+```{r}
+Unemployment2<- Unemployment1[,c(4,5,6)]
+```
+
+```{r}
+Unemployment2
+```
+
+```{r}
+cor2<-cor(Unemployment2)
+```
+
+```{r}
+cor2
+```
+
+11. Plotting a Corr plot for showing the correlation between the three numerical variables
+
+```{r}
+corrplot(cor2,method="circle",tl.srt=45,type="upper",tl.cex = 0.5,tl.col = "black")
+```
+
+12. Pie Chart for the distribution of estimated unemployment rate through regions
+
+```{r}
+UE_G2 <- aggregate(Estimated_Unemp_Rate ~ Region, data = Unemployment1, FUN = sum)
+```
+
+```{r}
+ggplot(UE_G2, aes(x = "", y = Estimated_Unemp_Rate, fill = Region)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") +
+  labs(title = "Distribution of Estimated Unemployment Rate by Region") +
+  theme_void() +
+  theme(legend.position = "right") 
+```
+
+13. Histogram of estimated unemployment rate by areas
+
+```{r}
+ggplot(Unemployment1,aes(x=Estimated_Unemp_Rate,fill=Areas))+
+  geom_histogram(binwidth = 1,color="darkgrey",alpha=0.7)+
+  labs(title = "Histogram of Estimated Unemployment Rate",x="Estimated Unemployment Rate",y="Count")+
+  theme_grey()
+```
+
+14. Anova to test the differences in unemployment rates by regions
+
+```{r}
+anova_model1<-aov(Estimated_Unemp_Rate~Region,data=Unemployment1)
+summary(anova_model1)
+```
+
+15. Histogram for the Estimated Employed Labor
+
+```{r}
+ggplot(Unemployment1,aes(Estimated_Emp_Rate))+
+  geom_histogram(bins = 30,fill="#03322A",alpha=0.6)+
+  labs(title="Histogram of Estimated Employed",x="Employed",y="Count")
+```
+
+17. Histogram for Estimated labor Rate
+
+```{r}
+ggplot(Unemployment1,aes(Estimated_Labour_Rate))+
+  geom_histogram(bins = 30,fill="#013E62",alpha=0.6)+
+  labs(title = "Histogram of Labour Participation",x="Labour Participation Rate",y="Count")
+```
+
+18. Histogram for Estimated Unemployment Rate
+
+```{r}
+{r}
+ggplot(Unemployment1,aes(x=Estimated_Unemp_Rate))+
+  geom_histogram(bins=30,fill="sienna",alpha=0.6)+
+  labs(title = "Histogram of Estimated Unemployment Rate",x="Estimated Unemployment Rate",y="Count")
+```
+
+19. Line graph showing unemployment rates over states
+
+```{r}
+ggplot(Unemployment1,aes(x=Region,y=Estimated_Unemp_Rate,group=Areas,color=Areas))+
+  geom_line()+
+  labs(title = "Unemployment Rate over States",x="Region",y="Unemployment Rate")+
+  theme(axis.text.x = element_text(angle = 90,vjust = 0.5,hjust = 1))
+```
+
+20. Pie Chart for showing Unemployment Rates according to the Areas
+
+```{r}
+plot_ly(Unemployment1,labels= ~Areas,type="pie",hole=0.5,textposition="inside")
+```
